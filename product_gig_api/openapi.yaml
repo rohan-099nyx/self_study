@@ -1,0 +1,116 @@
+openapi: 3.1.0
+info:
+  title: Product Gig GitHub Saver
+  version: 1.0.0
+  description: Saves each generated product gig as a new JSON file in the connected GitHub repository.
+servers:
+  - url: https://YOUR-DEPLOYED-API.onrender.com
+paths:
+  /products:
+    post:
+      operationId: saveProductGigToGitHub
+      summary: Save a product gig as JSON in GitHub
+      description: Call after generating the product title, description, price, verified image links, specifications, and social posts. Each call creates a new file.
+      security:
+        - ActionKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductGig'
+      responses:
+        '201':
+          description: Product gig saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  repository:
+                    type: string
+                  path:
+                    type: string
+                  file_url:
+                    type: string
+                  commit_sha:
+                    type: string
+                  saved_at:
+                    type: string
+        '401':
+          description: Missing or invalid Action API key
+        '422':
+          description: Request validation failed
+        '502':
+          description: GitHub could not save the file
+components:
+  securitySchemes:
+    ActionKey:
+      type: apiKey
+      in: header
+      name: X-Action-Key
+  schemas:
+    ProductGig:
+      type: object
+      required:
+        - product_name
+        - short_title
+        - description
+      properties:
+        product_name:
+          type: string
+          maxLength: 160
+        category:
+          type: string
+        price:
+          type: number
+          minimum: 0
+          nullable: true
+        currency:
+          type: string
+          default: INR
+        short_title:
+          type: string
+        description:
+          type: string
+        highlights:
+          type: array
+          items:
+            type: string
+        specifications:
+          type: object
+          additionalProperties: true
+        image_links:
+          type: array
+          description: HTTPS URLs to images that are publicly accessible. Do not invent URLs.
+          items:
+            type: string
+            format: uri
+        image_notes:
+          type: array
+          items:
+            type: string
+        social_posts:
+          type: object
+          description: Platform-specific promotional captions, e.g. Instagram, WhatsApp, Facebook.
+          additionalProperties:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        email_subject:
+          type: string
+          nullable: true
+        email_body:
+          type: string
+          nullable: true
+        source_notes:
+          type: array
+          description: Facts that need confirmation or notes about the source of product details.
+          items:
+            type: string
