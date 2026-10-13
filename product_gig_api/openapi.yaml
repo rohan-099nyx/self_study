@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: Saves each generated product gig as a new JSON file in the connected GitHub repository.
 servers:
-  - url: https://YOUR-DEPLOYED-API.onrender.com
+  - url: https://gig-creator.onrender.com/
 paths:
   /products:
     post:
